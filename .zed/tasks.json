@@ -1,0 +1,10 @@
+[
+  {
+    "label": "Run Python File",
+    "command": "python",
+    "args": ["$ZED_FILE"],
+    "cwd": "$ZED_FILE_DIR",
+    "use_new_terminal": true,
+    "reveal": "always",
+  },
+]

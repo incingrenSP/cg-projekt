@@ -1,16 +1,23 @@
-import pygame, os
-from misc import import_folder
+import os
+
+import pygame
+
+from src.misc import import_folder
+
 
 class Animator:
     def __init__(self):
         self.frames = {
-            'fireball' : import_folder(os.path.join('graphics', 'particles', 'fireball')),
-            'slash' : import_folder(os.path.join('graphics', 'particles', 'slash'), 0.2)
+            "fireball": import_folder(
+                os.path.join("graphics", "particles", "fireball")
+            ),
+            "slash": import_folder(os.path.join("graphics", "particles", "slash"), 0.2),
         }
 
     def generate_effect(self, pos, groups, animation_type):
         animations = self.frames[animation_type]
         ParticleEffect(pos, animations, groups)
+
 
 class ParticleEffect(pygame.sprite.Sprite):
     def __init__(self, pos, frames, groups):
@@ -19,7 +26,7 @@ class ParticleEffect(pygame.sprite.Sprite):
         self.animation_speed = 0.1
         self.animations = frames
         self.image = self.animations[self.frame_index]
-        self.rect = self.image.get_rect(center  = pos)
+        self.rect = self.image.get_rect(center=pos)
 
     def animate(self):
         # animate

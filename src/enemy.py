@@ -1,34 +1,40 @@
-import pygame, os
-from settings import *
-from misc import *
-from entity import Entity
+import os
+
+import pygame
+
+from src.entity import Entity
+from src.misc import *
+from src.settings import *
+
 
 class Enemy(Entity):
-    def __init__(self, enemy_name, pos, groups, obstacle_sprites, damage_player, add_exp):
+    def __init__(
+        self, enemy_name, pos, groups, obstacle_sprites, damage_player, add_exp
+    ):
         super().__init__(groups)
-        self.sprite_type = 'enemy'
+        self.sprite_type = "enemy"
 
         # graphics
         self.import_graphics(enemy_name)
-        self.status = 'down'
+        self.status = "down"
         self.image = self.animations[self.status][int(self.frame_index)]
 
         # movement
-        self.rect = self.image.get_rect(center = pos)
+        self.rect = self.image.get_rect(center=pos)
         self.hitbox = self.rect.copy()
         self.obstacle_sprites = obstacle_sprites
 
         # stats
         self.enemy_name = enemy_name
         enemy_info = enemy_data[self.enemy_name]
-        self.health = enemy_info['health']
-        self.damage = enemy_info['damage']
-        self.exp = enemy_info['exp']
-        self.speed = enemy_info['speed']
-        self.knock_back = enemy_info['knock_back']
-        self.attack_range = enemy_info['attack_range']
-        self.detection_range = enemy_info['detection_range']
-        self.attack_type = enemy_info['attack_type']
+        self.health = enemy_info["health"]
+        self.damage = enemy_info["damage"]
+        self.exp = enemy_info["exp"]
+        self.speed = enemy_info["speed"]
+        self.knock_back = enemy_info["knock_back"]
+        self.attack_range = enemy_info["attack_range"]
+        self.detection_range = enemy_info["detection_range"]
+        self.attack_type = enemy_info["attack_type"]
 
         # interactions
         self.can_attack = True
@@ -44,12 +50,12 @@ class Enemy(Entity):
         self.invincible_duration = 600
 
     def import_graphics(self, name):
-        self.animations = {
-            'down' : [], 'left' : [], 'right' : [], 'up' : []
-        }
-        main_path = os.path.join('graphics', 'character', 'enemies', f'{name}')
+        self.animations = {"down": [], "left": [], "right": [], "up": []}
+        main_path = os.path.join("graphics", "character", "enemies", f"{name}")
         for animation in self.animations.keys():
-            self.animations[animation] = import_folder(os.path.join(main_path, animation))
+            self.animations[animation] = import_folder(
+                os.path.join(main_path, animation)
+            )
 
     def get_player_distance(self, player):
         enemy_vec = pygame.math.Vector2(self.rect.center)
@@ -77,14 +83,14 @@ class Enemy(Entity):
 
     def check_status(self):
         if self.direction.x == 1:
-            self.status = 'right'
+            self.status = "right"
         elif self.direction.x == -1:
-            self.status = 'left'
+            self.status = "left"
         if self.direction.y == 1:
-            self.status = 'down'
+            self.status = "down"
         elif self.direction.y == -1:
-            self.status = 'up'
-        
+            self.status = "up"
+
     def animate(self):
         animation = self.animations[self.status]
 
@@ -95,7 +101,7 @@ class Enemy(Entity):
 
         self.image = animation[int(self.frame_index)]
         self.image = pygame.transform.scale_by(self.image, 3)
-        self.rect = self.image.get_rect(center = self.hitbox.center)
+        self.rect = self.image.get_rect(center=self.hitbox.center)
 
         if not self.vulnerable:
             alpha = self.wave_value()
@@ -116,7 +122,7 @@ class Enemy(Entity):
     def get_damage(self, player, attack_type):
         if self.vulnerable:
             self.direction = self.get_player_distance(player)[1]
-            if attack_type == 'weapon':
+            if attack_type == "weapon":
                 self.health -= player.get_weapon_damage()
 
             self.hit_time = pygame.time.get_ticks()
@@ -141,10 +147,13 @@ class Enemy(Entity):
 
     def enemy_update(self, player):
         self.actions(player)
-        
+
+
 class Dragon(Enemy):
     def __init__(self, pos, groups, obstacle_sprites, damage_player, add_exp):
-        super().__init__('dragon', pos, groups, obstacle_sprites, damage_player, add_exp)
+        super().__init__(
+            "dragon", pos, groups, obstacle_sprites, damage_player, add_exp
+        )
 
     def move(self):
         if self.direction.magnitude() != 0:
@@ -154,7 +163,7 @@ class Dragon(Enemy):
         self.hitbox.y += self.direction.y * self.speed
 
         self.rect.center = self.hitbox.center
-        
+
     def update(self):
         self.hit_reaction()
         self.cooldowns()
@@ -165,4 +174,3 @@ class Dragon(Enemy):
 
     def enemy_update(self, player):
         self.actions(player)
-
